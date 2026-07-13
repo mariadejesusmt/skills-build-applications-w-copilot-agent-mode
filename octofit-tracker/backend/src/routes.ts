@@ -17,7 +17,9 @@ const resourceModels: Record<string, MongooseModel<any>> = {
 };
 
 for (const [resource, Model] of Object.entries(resourceModels)) {
-  router.get(`/api/${resource}/`, async (_req, res) => {
+  const resourcePath = `/api/${resource}`;
+
+  router.get([resourcePath, `${resourcePath}/`], async (_req, res) => {
     try {
       const items = await Model.find({});
       res.json(items);
@@ -26,7 +28,7 @@ for (const [resource, Model] of Object.entries(resourceModels)) {
     }
   });
 
-  router.get(`/api/${resource}/:id`, async (req, res) => {
+  router.get([`${resourcePath}/:id`, `${resourcePath}/:id/`], async (req, res) => {
     try {
       const item = await Model.findById(req.params.id);
       if (!item) {
