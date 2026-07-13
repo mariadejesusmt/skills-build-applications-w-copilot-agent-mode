@@ -1,0 +1,43 @@
+import { Router } from 'express';
+import type { Model as MongooseModel } from 'mongoose';
+import { User } from './models/user.js';
+import { Team } from './models/team.js';
+import { Activity } from './models/activity.js';
+import { Leaderboard } from './models/leaderboard.js';
+import { Workout } from './models/workout.js';
+
+const router = Router();
+
+const resourceModels: Record<string, MongooseModel<any>> = {
+  users: User as unknown as MongooseModel<any>,
+  teams: Team as unknown as MongooseModel<any>,
+  activities: Activity as unknown as MongooseModel<any>,
+  leaderboard: Leaderboard as unknown as MongooseModel<any>,
+  workouts: Workout as unknown as MongooseModel<any>,
+};
+
+for (const [resource, Model] of Object.entries(resourceModels)) {
+  router.get(`/api/${resource}/`, async (_req, res) => {
+    try {
+      const items = await Model.find({});
+      res.json(items);
+    } catch (error) {
+      res.status(500).json({ message: `Error fetching ${resource}`, error });
+    }
+  });
+
+  router.get(`/api/${resource}/:id`, async (req, res) => {
+    try {
+      const item = await Model.findById(req.params.id);
+      if (!item) {
+        res.status(404).json({ message: `${resource} not found` });
+        return;
+      }
+      res.json(item);
+    } catch (error) {
+      res.status(500).json({ message: `Error fetching ${resource}`, error });
+    }
+  });
+}
+
+export default router;
