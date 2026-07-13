@@ -5,13 +5,13 @@ import Leaderboard from './components/Leaderboard'
 import Teams from './components/Teams'
 import Users from './components/Users'
 import Workouts from './components/Workouts'
-import { getApiBaseUrl } from './api'
 
-function App() {
+function App({ apiBaseUrl = 'http://localhost:8000' }) {
   const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
-  const apiBaseExample = codespaceName
-    ? `https://${codespaceName}-8000.app.github.dev/api/`
-    : 'http://localhost:8000/api/'
+  const resolvedApiBaseUrl = codespaceName
+    ? `https://${codespaceName}-8000.app.github.dev`
+    : apiBaseUrl || 'http://localhost:8000'
+  const apiBaseExample = `${resolvedApiBaseUrl}/api/`
 
   return (
     <div className="min-vh-100 bg-light">
@@ -23,7 +23,7 @@ function App() {
             Browse users, teams, activities, workouts, and leaderboard data served from the Express API.
           </p>
           <p className="text-muted mb-4">
-            API base: <strong>{getApiBaseUrl('users')}</strong>
+            API base: <strong>{apiBaseExample}</strong>
           </p>
           <p className="text-muted small mb-4">
             Define <code>VITE_CODESPACE_NAME</code> in <code>.env.local</code> to use a GitHub Codespaces API URL. If it is unset, the app falls back to the local backend.

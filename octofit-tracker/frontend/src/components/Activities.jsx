@@ -1,5 +1,28 @@
 import { useEffect, useState } from 'react'
-import { fetchResource } from '../api'
+
+function normalizeItems(payload) {
+  if (Array.isArray(payload)) {
+    return payload
+  }
+
+  if (!payload || typeof payload !== 'object') {
+    return []
+  }
+
+  if (Array.isArray(payload.results)) {
+    return payload.results
+  }
+
+  if (Array.isArray(payload.items)) {
+    return payload.items
+  }
+
+  if (Array.isArray(payload.data)) {
+    return payload.data
+  }
+
+  return []
+}
 
 function Activities() {
   const [items, setItems] = useState([])
@@ -8,12 +31,20 @@ function Activities() {
 
   useEffect(() => {
     let ignore = false
+    const endpoint = '/api/activities/'
 
     async function loadActivities() {
       try {
-        const data = await fetchResource('activities')
+        const response = await fetch(endpoint)
+
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`)
+        }
+
+        const payload = await response.json()
+
         if (!ignore) {
-          setItems(data)
+          setItems(normalizeItems(payload))
           setLoading(false)
         }
       } catch (err) {
