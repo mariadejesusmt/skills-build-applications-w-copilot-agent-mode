@@ -31,7 +31,11 @@ function Teams() {
 
   useEffect(() => {
     let ignore = false
-    const endpoint = '/api/teams/'
+    const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+    const apiBaseUrl = codespaceName
+      ? `https://${codespaceName}-8000.app.github.dev`
+      : 'http://localhost:8000'
+    const endpoint = `${apiBaseUrl}/api/teams/`
 
     async function loadTeams() {
       try {
