@@ -1,13 +1,18 @@
 const DEFAULT_LOCAL_API = 'http://localhost:8000'
 
-function getApiBaseUrl(resource) {
+function getApiBaseUrl(apiBaseUrl = DEFAULT_LOCAL_API) {
   const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
 
   if (codespaceName) {
-    return `https://${codespaceName}-8000.app.github.dev/api/${resource}/`
+    return `https://${codespaceName}-8000.app.github.dev`
   }
 
-  return `${DEFAULT_LOCAL_API}/api/${resource}/`
+  return apiBaseUrl || DEFAULT_LOCAL_API
+}
+
+function getApiEndpoint(resource, apiBaseUrl = DEFAULT_LOCAL_API) {
+  const baseUrl = getApiBaseUrl(apiBaseUrl)
+  return `${baseUrl}/api/${resource}/`
 }
 
 function normalizeItems(payload) {
@@ -31,11 +36,15 @@ function normalizeItems(payload) {
     return payload.data
   }
 
+  if (Array.isArray(payload.records)) {
+    return payload.records
+  }
+
   return []
 }
 
-async function fetchResource(resource) {
-  const response = await fetch(getApiBaseUrl(resource))
+async function fetchResource(resource, apiBaseUrl = DEFAULT_LOCAL_API) {
+  const response = await fetch(getApiEndpoint(resource, apiBaseUrl))
 
   if (!response.ok) {
     throw new Error(`Request failed with status ${response.status}`)
@@ -45,4 +54,4 @@ async function fetchResource(resource) {
   return normalizeItems(payload)
 }
 
-export { fetchResource, getApiBaseUrl, normalizeItems }
+export { fetchResource, getApiBaseUrl, getApiEndpoint, normalizeItems }

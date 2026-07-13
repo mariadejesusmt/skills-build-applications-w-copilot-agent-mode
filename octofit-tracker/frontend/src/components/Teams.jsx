@@ -1,28 +1,5 @@
 import { useEffect, useState } from 'react'
-
-function normalizeItems(payload) {
-  if (Array.isArray(payload)) {
-    return payload
-  }
-
-  if (!payload || typeof payload !== 'object') {
-    return []
-  }
-
-  if (Array.isArray(payload.results)) {
-    return payload.results
-  }
-
-  if (Array.isArray(payload.items)) {
-    return payload.items
-  }
-
-  if (Array.isArray(payload.data)) {
-    return payload.data
-  }
-
-  return []
-}
+import { getApiEndpoint, normalizeItems } from '../api'
 
 function Teams() {
   const [items, setItems] = useState([])
@@ -31,15 +8,10 @@ function Teams() {
 
   useEffect(() => {
     let ignore = false
-    const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
-    const apiBaseUrl = codespaceName
-      ? `https://${codespaceName}-8000.app.github.dev`
-      : 'http://localhost:8000'
-    const endpoint = `${apiBaseUrl}/api/teams/`
 
     async function loadTeams() {
       try {
-        const response = await fetch(endpoint)
+        const response = await fetch(getApiEndpoint('teams'))
 
         if (!response.ok) {
           throw new Error(`Request failed with status ${response.status}`)

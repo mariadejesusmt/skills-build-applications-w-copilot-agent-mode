@@ -1,5 +1,6 @@
 import './App.css'
 import { NavLink, Route, Routes } from 'react-router-dom'
+import { getApiBaseUrl } from './api'
 import Activities from './components/Activities'
 import Leaderboard from './components/Leaderboard'
 import Teams from './components/Teams'
@@ -7,10 +8,7 @@ import Users from './components/Users'
 import Workouts from './components/Workouts'
 
 function App({ apiBaseUrl = 'http://localhost:8000' }) {
-  const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
-  const resolvedApiBaseUrl = codespaceName
-    ? `https://${codespaceName}-8000.app.github.dev`
-    : apiBaseUrl || 'http://localhost:8000'
+  const resolvedApiBaseUrl = getApiBaseUrl(apiBaseUrl)
   const apiBaseExample = `${resolvedApiBaseUrl}/api/`
 
   return (
