@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getApiEndpoint, normalizeItems } from '../api'
+import { normalizeItems } from '../api'
 
 function Leaderboard() {
   const [items, setItems] = useState([])
@@ -8,10 +8,15 @@ function Leaderboard() {
 
   useEffect(() => {
     let ignore = false
+    const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+    const apiBaseUrl = codespaceName
+      ? `https://${codespaceName}-8000.app.github.dev`
+      : 'http://localhost:8000'
+    const endpoint = `${apiBaseUrl}/api/leaderboard/`
 
     async function loadLeaderboard() {
       try {
-        const response = await fetch(getApiEndpoint('leaderboard'))
+        const response = await fetch(endpoint)
 
         if (!response.ok) {
           throw new Error(`Request failed with status ${response.status}`)
